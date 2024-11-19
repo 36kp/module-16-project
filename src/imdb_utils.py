@@ -10,6 +10,8 @@ kaggle_data = "carolzhangdc/imdb-5000-movie-dataset"
 def aquireIMDbDataFrame():
     """
     Aquires the IMDb data from a local file or from Kaggle if the file does not exist locally.
+
+    Returns: A pandas DataFrame with the IMDb data.
     """
 
     file_path = os.path.join(resources_path, file_name)
