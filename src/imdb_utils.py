@@ -26,7 +26,7 @@ def downloadKaggleIMDbFile():
     """
     
     kaggle_path = kagglehub.dataset_download("carolzhangdc/imdb-5000-movie-dataset")
-    source = os.path.join(kaggle_path, "movie_metadata.csv")
+    source = os.path.join(kaggle_path, file_name)
     destination = os.path.join(resources_path, file_name)
     copy_file(source, destination)
 
