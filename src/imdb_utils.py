@@ -41,6 +41,9 @@ def copy_file(source, destination):
 
     :param source: The path of the source file to copy.
     :param destination: The path where the file should be copied.
+
+    Raises: section with FileNotFoundError: if source file is not found on local destination path. 
+    Exception: if an unknown error occurs.
     """
     try:
         shutil.copy(source, destination)
