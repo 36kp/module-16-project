@@ -5,6 +5,8 @@ import shutil
 
 resources_path = "../resources"
 file_name = "movie_metadata.csv"
+kaggle_data = "carolzhangdc/imdb-5000-movie-dataset"
+
 def aquireIMDbDataFrame():
     """
     Aquires the IMDb data from a local file or from Kaggle if the file does not exist locally.
@@ -25,7 +27,7 @@ def downloadKaggleIMDbFile():
     Copies a file from Kraggle.
     """
     
-    kaggle_path = kagglehub.dataset_download("carolzhangdc/imdb-5000-movie-dataset")
+    kaggle_path = kagglehub.dataset_download(kaggle_data)
     source = os.path.join(kaggle_path, file_name)
     destination = os.path.join(resources_path, file_name)
     copy_file(source, destination)
