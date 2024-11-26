@@ -154,3 +154,10 @@ def process_genres(data: pd.DataFrame) -> pd.DataFrame:
     return data
 
 
+
+def director_frequence(data: pd.DataFrame) -> pd.DataFrame:
+    data['director_name'] = data['director_name'].fillna('unknown_director')
+    director_frequencies = data['director_name'].value_counts()
+    data['director_frequency'] = data['director_name'].map(director_frequencies)
+    data = data.drop(columns=['director_name'])
+    return data
