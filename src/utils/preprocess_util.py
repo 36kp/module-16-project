@@ -137,3 +137,20 @@ def bucket_contentRatings(data: pd.DataFrame) -> pd.DataFrame:
     content_rating_df["rating_bin"] = content_rating_df["content_rating"].where(content_rating_df["percentage"] >= 10, "other")
     content_rating_df.drop(columns=['content_rating','percentage'], inplace=True)
     return pd.concat([data, content_rating_df], axis=1)
+
+
+def process_genres(data: pd.DataFrame) -> pd.DataFrame:
+    data['genres'] = data['genres'].fillna("other_genre")
+    data['genres'] = data['genres'].str.split('|')
+    all_genres = [genre for sublist in data['genres'] for genre in sublist]
+    genre_counts = pd.Series(all_genres).value_counts()
+    threshold = len(data) * 0.1
+    frequent_genres = genre_counts[genre_counts > threshold].index
+    for genre in frequent_genres:
+        data[genre] = data['genres'].apply(lambda x: genre in x).astype(int)
+
+    data['other_genre'] = data['genres'].apply(lambda x: any(genre not in frequent_genres for genre in x)).astype(int)
+    data = data.drop(columns=['genres'])
+    return data
+
+
