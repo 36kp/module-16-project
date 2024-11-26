@@ -10,7 +10,8 @@ def preprocess_data(data: pd.DataFrame) -> pd.DataFrame:
         _fillna, 
         _concat, 
         _join_explode, 
-        _freq
+        _freq,
+        _drop_names_likes
         ]
     return _pipeline(data, functions)
 
@@ -96,10 +97,6 @@ def _freq(data: pd.DataFrame, debug: bool = False) -> pd.DataFrame:
         print(f"{_freq.__name__}: Processed data shape: {processed_data.shape}")
     return processed_data
 
-
-
-# TODO MOVE THIS TO A SEPARATE FILE
-
 def _drop_names_likes(data: pd.DataFrame, debug: bool = False) -> pd.DataFrame:
     drop_columns = ['actor_1_facebook_likes', 
                     'actor_1_name', 
@@ -113,16 +110,4 @@ def _drop_names_likes(data: pd.DataFrame, debug: bool = False) -> pd.DataFrame:
     processed_data = data.drop(drop_columns, axis=1)
     if debug:
         print(f"{_drop_names_likes.__name__}: Processed data shape: {processed_data.shape}")
-    return processed_data
-
-
-def _genres_dummies(data: pd.DataFrame, debug: bool = False) -> pd.DataFrame:
-    # TODO modify this with a lambda function
-    genres = data
-    genres['genres'] = genres['genres'].astype(str)
-    genres['genres'] = genres['genres'].str.split('|')
-    genre_dummies = genres['genres'].explode().str.get_dummies().groupby(level=0).max()
-    processed_data = pd.concat([genres.drop(columns=['genres']), genre_dummies], axis=1)
-    if debug:
-        print(f"{_genres_dummies.__name__}: Processed data shape: {processed_data.shape}")
     return processed_data
