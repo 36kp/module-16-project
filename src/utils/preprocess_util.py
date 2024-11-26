@@ -126,3 +126,14 @@ def _genres_dummies(data: pd.DataFrame, debug: bool = False) -> pd.DataFrame:
     if debug:
         print(f"{_genres_dummies.__name__}: Processed data shape: {processed_data.shape}")
     return processed_data
+
+
+
+def bucket_contentRatings(data: pd.DataFrame) -> pd.DataFrame:
+    content_rating_df = data[['content_rating']].copy()
+    content_rating_df['content_rating'] = content_rating_df['content_rating'].fillna("other")
+    total_count = content_rating_df['content_rating'].value_counts().sum()
+    content_rating_df['percentage'] = content_rating_df['content_rating'].map(content_rating_df['content_rating'].value_counts()) / total_count * 100
+    content_rating_df["rating_bin"] = content_rating_df["content_rating"].where(content_rating_df["percentage"] >= 10, "other")
+    content_rating_df.drop(columns=['content_rating','percentage'], inplace=True)
+    return pd.concat([data, content_rating_df], axis=1)
