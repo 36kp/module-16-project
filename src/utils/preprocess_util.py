@@ -2,15 +2,19 @@ import pandas as pd
 
 def preprocess_data(data: pd.DataFrame) -> pd.DataFrame:
     functions = [
+        _actor_frequency,
+        _director_frequence, 
+        _bucket_contentRatings,
+        _process_genres, 
         _drop, 
         _dropNaN, 
         _sort, 
         _filter, 
         _strip, 
         _fillna, 
-        _concat, 
-        _join_explode, 
-        _freq
+        #_concat, 
+        #join_explode, 
+        #_freq
         ]
     return _pipeline(data, functions)
 
@@ -129,7 +133,7 @@ def _genres_dummies(data: pd.DataFrame, debug: bool = False) -> pd.DataFrame:
 
 
 
-def bucket_contentRatings(data: pd.DataFrame) -> pd.DataFrame:
+def _bucket_contentRatings(data: pd.DataFrame) -> pd.DataFrame:
     content_rating_df = data[['content_rating']].copy()
     content_rating_df['content_rating'] = content_rating_df['content_rating'].fillna("other")
     total_count = content_rating_df['content_rating'].value_counts().sum()
@@ -139,7 +143,7 @@ def bucket_contentRatings(data: pd.DataFrame) -> pd.DataFrame:
     return pd.concat([data, content_rating_df], axis=1)
 
 
-def process_genres(data: pd.DataFrame) -> pd.DataFrame:
+def _process_genres(data: pd.DataFrame) -> pd.DataFrame:
     data['genres'] = data['genres'].fillna("other_genre")
     data['genres'] = data['genres'].str.split('|')
     all_genres = [genre for sublist in data['genres'] for genre in sublist]
@@ -155,14 +159,14 @@ def process_genres(data: pd.DataFrame) -> pd.DataFrame:
 
 
 
-def director_frequence(data: pd.DataFrame) -> pd.DataFrame:
+def _director_frequence(data: pd.DataFrame) -> pd.DataFrame:
     data['director_name'] = data['director_name'].fillna('unknown_director')
     director_frequencies = data['director_name'].value_counts()
     data['director_frequency'] = data['director_name'].map(director_frequencies)
     data = data.drop(columns=['director_name'])
     return data
 
-def actor_frequency(data: pd.DataFrame) -> pd.DataFrame:
+def _actor_frequency(data: pd.DataFrame) -> pd.DataFrame:
     data['actor_1_name'] = data['actor_1_name'].fillna('unknown_actor_1_name')
     data['actor_2_name'] = data['actor_2_name'].fillna('unknown_actor_2_name')
     data['actor_3_name'] = data['actor_3_name'].fillna('unknown_actor_3_name')
@@ -174,3 +178,13 @@ def actor_frequency(data: pd.DataFrame) -> pd.DataFrame:
     data['total_actor_frequency'] = data['actor_1_frequency'] + data['actor_2_frequency'] + data['actor_3_frequency']
     data = data.drop(columns=['actor_1_name','actor_2_name','actor_3_name'])
     return data
+
+
+def preprocess_data2(data: pd.DataFrame) -> pd.DataFrame:
+    functions = [
+        _bucket_contentRatings,
+        _process_genres, 
+        _director_frequence, 
+        _actor_frequency
+        ]
+    return _pipeline(data, functions)
