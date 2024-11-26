@@ -126,3 +126,51 @@ def _genres_dummies(data: pd.DataFrame, debug: bool = False) -> pd.DataFrame:
     if debug:
         print(f"{_genres_dummies.__name__}: Processed data shape: {processed_data.shape}")
     return processed_data
+
+
+
+def bucket_contentRatings(data: pd.DataFrame) -> pd.DataFrame:
+    content_rating_df = data[['content_rating']].copy()
+    content_rating_df['content_rating'] = content_rating_df['content_rating'].fillna("other")
+    total_count = content_rating_df['content_rating'].value_counts().sum()
+    content_rating_df['percentage'] = content_rating_df['content_rating'].map(content_rating_df['content_rating'].value_counts()) / total_count * 100
+    content_rating_df["rating_bin"] = content_rating_df["content_rating"].where(content_rating_df["percentage"] >= 10, "other")
+    content_rating_df.drop(columns=['content_rating','percentage'], inplace=True)
+    return pd.concat([data, content_rating_df], axis=1)
+
+
+def process_genres(data: pd.DataFrame) -> pd.DataFrame:
+    data['genres'] = data['genres'].fillna("other_genre")
+    data['genres'] = data['genres'].str.split('|')
+    all_genres = [genre for sublist in data['genres'] for genre in sublist]
+    genre_counts = pd.Series(all_genres).value_counts()
+    threshold = len(data) * 0.1
+    frequent_genres = genre_counts[genre_counts > threshold].index
+    for genre in frequent_genres:
+        data[genre] = data['genres'].apply(lambda x: genre in x).astype(int)
+
+    data['other_genre'] = data['genres'].apply(lambda x: any(genre not in frequent_genres for genre in x)).astype(int)
+    data = data.drop(columns=['genres'])
+    return data
+
+
+
+def director_frequence(data: pd.DataFrame) -> pd.DataFrame:
+    data['director_name'] = data['director_name'].fillna('unknown_director')
+    director_frequencies = data['director_name'].value_counts()
+    data['director_frequency'] = data['director_name'].map(director_frequencies)
+    data = data.drop(columns=['director_name'])
+    return data
+
+def actor_frequency(data: pd.DataFrame) -> pd.DataFrame:
+    data['actor_1_name'] = data['actor_1_name'].fillna('unknown_actor_1_name')
+    data['actor_2_name'] = data['actor_2_name'].fillna('unknown_actor_2_name')
+    data['actor_3_name'] = data['actor_3_name'].fillna('unknown_actor_3_name')
+    all_actors = pd.concat([data['actor_1_name'], data['actor_2_name'], data['actor_3_name']])
+    actor_frequencies = all_actors.value_counts()
+    data['actor_1_frequency'] = data['actor_1_name'].map(actor_frequencies)
+    data['actor_2_frequency'] = data['actor_2_name'].map(actor_frequencies)
+    data['actor_3_frequency'] = data['actor_3_name'].map(actor_frequencies)
+    data['total_actor_frequency'] = data['actor_1_frequency'] + data['actor_2_frequency'] + data['actor_3_frequency']
+    data = data.drop(columns=['actor_1_name','actor_2_name','actor_3_name'])
+    return data
