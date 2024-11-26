@@ -22,7 +22,7 @@ def _pipeline(data: pd.DataFrame, functions: list) -> pd.DataFrame:
 
 
 def _drop(data: pd.DataFrame, debug: bool = False) -> pd.DataFrame:
-    drop_columns = ['movie_imdb_link','aspect_ratio', 'plot_keywords']
+    drop_columns = ['movie_imdb_link','aspect_ratio', 'plot_keywords', 'movie_title', 'language']
     processed_data = data.drop(drop_columns, axis=1)
     if debug:
         print(f"{_drop.__name__}: Processed data shape: {processed_data.shape}")
@@ -105,8 +105,7 @@ def _drop_names_likes(data: pd.DataFrame, debug: bool = False) -> pd.DataFrame:
                     'actor_3_facebook_likes', 
                     'actor_3_name', 
                     'director_name', 
-                    'actors', 
-                    'movie_title']
+                    'actors']
     processed_data = data.drop(drop_columns, axis=1)
     if debug:
         print(f"{_drop_names_likes.__name__}: Processed data shape: {processed_data.shape}")

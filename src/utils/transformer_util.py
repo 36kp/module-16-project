@@ -1,7 +1,7 @@
 import pandas as pd
 def encode_and_explode_data(data: pd.DataFrame):
     # Create dummy columns for categorical columns
-    dummy_columns = ['content_rating', 'color', 'language']
+    dummy_columns = ['content_rating', 'color']
     for col in dummy_columns:
         print(col)
         column_dummies = pd.get_dummies(data[col], prefix=col, prefix_sep='_', dtype='int') 
