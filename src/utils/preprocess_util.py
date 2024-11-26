@@ -161,3 +161,16 @@ def director_frequence(data: pd.DataFrame) -> pd.DataFrame:
     data['director_frequency'] = data['director_name'].map(director_frequencies)
     data = data.drop(columns=['director_name'])
     return data
+
+def actor_frequency(data: pd.DataFrame) -> pd.DataFrame:
+    data['actor_1_name'] = data['actor_1_name'].fillna('unknown_actor_1_name')
+    data['actor_2_name'] = data['actor_2_name'].fillna('unknown_actor_2_name')
+    data['actor_3_name'] = data['actor_3_name'].fillna('unknown_actor_3_name')
+    all_actors = pd.concat([data['actor_1_name'], data['actor_2_name'], data['actor_3_name']])
+    actor_frequencies = all_actors.value_counts()
+    data['actor_1_frequency'] = data['actor_1_name'].map(actor_frequencies)
+    data['actor_2_frequency'] = data['actor_2_name'].map(actor_frequencies)
+    data['actor_3_frequency'] = data['actor_3_name'].map(actor_frequencies)
+    data['total_actor_frequency'] = data['actor_1_frequency'] + data['actor_2_frequency'] + data['actor_3_frequency']
+    data = data.drop(columns=['actor_1_name','actor_2_name','actor_3_name'])
+    return data
