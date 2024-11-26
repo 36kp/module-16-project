@@ -6,6 +6,7 @@ def preprocess_data(data: pd.DataFrame) -> pd.DataFrame:
         _director_frequence, 
         _bucket_contentRatings,
         _process_genres, 
+        _sum_actor_facebook_likes,
         _drop, 
         _dropNaN, 
         _sort, 
@@ -188,3 +189,16 @@ def preprocess_data2(data: pd.DataFrame) -> pd.DataFrame:
         _actor_frequency
         ]
     return _pipeline(data, functions)
+
+
+def _sum_actor_facebook_likes(data: pd.DataFrame) -> pd.DataFrame:
+    data['actor_1_facebook_likes'] = data['actor_1_facebook_likes'].fillna(0)
+    data['actor_2_facebook_likes'] = data['actor_2_facebook_likes'].fillna(0)
+    data['actor_3_facebook_likes'] = data['actor_3_facebook_likes'].fillna(0)
+
+    data['actor_total_facebook_likes'] = (
+        data['actor_1_facebook_likes'] + 
+        data['actor_2_facebook_likes'] + 
+        data['actor_3_facebook_likes']
+)
+    return data
