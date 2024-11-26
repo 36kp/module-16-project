@@ -2,24 +2,21 @@ import pandas as pd
 
 def preprocess_data(data: pd.DataFrame) -> pd.DataFrame:
     functions = [
-        _genres_dummies,
         _drop, 
         _dropNaN, 
         _sort, 
         _filter, 
         _strip, 
         _fillna, 
-        _strip_xa0, 
         _concat, 
         _join_explode, 
-        _freq, 
-        _drop_names_likes
+        _freq
         ]
     return _pipeline(data, functions)
 
 def _pipeline(data: pd.DataFrame, functions: list) -> pd.DataFrame:
     for func in functions:
-        data = func(data, debug = True) 
+        data = func(data) 
     return data
 
 
@@ -70,17 +67,10 @@ def _fillna(data: pd.DataFrame, debug: bool = False) -> pd.DataFrame:
         print(f"{_fillna.__name__}: Processed data shape: {processed_data.shape}")
     return processed_data
 
-def _strip_xa0(data: pd.DataFrame, debug: bool = False) -> pd.DataFrame:
-    processed_data = data
-    processed_data['movie_title'] = processed_data['movie_title'].apply(lambda x: x.strip('\xa0'))
-    if debug:
-        print(f"{_strip_xa0.__name__}: Processed data shape: {processed_data.shape}")
-    return processed_data
-
 def _concat(data: pd.DataFrame, debug: bool = False) -> pd.DataFrame:
     processed_data = data
     processed_data['actors'] = processed_data[['actor_1_name', 'actor_2_name', 'actor_3_name']].agg(list, axis=1)
-    processed_data['facebook_likes'] = processed_data[['actor_1_facebook_likes', 'actor_2_facebook_likes', 'actor_3_facebook_likes']].agg(list, axis=1)
+    processed_data['actor_facebook_likes'] = processed_data[['actor_1_facebook_likes', 'actor_2_facebook_likes', 'actor_3_facebook_likes']].agg(list, axis=1)
     if debug:
         print(f"{_concat.__name__}: Processed data shape: {processed_data.shape}")
     return processed_data
@@ -88,7 +78,8 @@ def _concat(data: pd.DataFrame, debug: bool = False) -> pd.DataFrame:
 
 def _join_explode(data: pd.DataFrame, debug: bool = False) -> pd.DataFrame:
     processed_data = data
-    processed_data = processed_data.explode(column=['actors', 'facebook_likes'])
+    processed_data = processed_data.explode(column=['actors', 'actor_facebook_likes'])
+    processed_data.reset_index(drop=True, inplace=True) 
     if debug:
         print(f"{_join_explode.__name__}: Processed data shape: {processed_data.shape}")
     return processed_data
@@ -105,6 +96,9 @@ def _freq(data: pd.DataFrame, debug: bool = False) -> pd.DataFrame:
         print(f"{_freq.__name__}: Processed data shape: {processed_data.shape}")
     return processed_data
 
+
+
+# TODO MOVE THIS TO A SEPARATE FILE
 
 def _drop_names_likes(data: pd.DataFrame, debug: bool = False) -> pd.DataFrame:
     drop_columns = ['actor_1_facebook_likes', 
