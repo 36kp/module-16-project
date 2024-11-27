@@ -55,7 +55,8 @@ def _drop(data: pd.DataFrame, debug: bool = False) -> pd.DataFrame:
                     'movie_imdb_link', 
                     'aspect_ratio', 
                     'plot_keywords', 
-                    'color']
+                    'color',
+                    'language']
     processed_data = data.drop(drop_columns, axis=1)
     if debug:
         print(f"{_drop.__name__}: Processed data shape: {processed_data.shape}")
