@@ -110,6 +110,9 @@ class PredictionDFBuilder:
 
     def __calculate_year(self):
         self.prediction["title_year"] = datetime.now().year    
+
+    def __calculate_gross(self):
+        self.prediction["gross"] = self.dataframe['gross'].mean()
             
     def build(self) -> pd.DataFrame:
         self.__calculate_actor_facebook_likes()
@@ -117,5 +120,6 @@ class PredictionDFBuilder:
         self.__calculate_director_frequency()
         self.__calculate_rating()
         self.__calculate_year()
+        self.__calculate_gross()
 
         return self.prediction        
