@@ -1,4 +1,6 @@
 import pandas as pd
+from datetime import datetime
+
 
 class PredictionDFBuilder:
     def __init__(self, dataframe: pd.DataFrame):
@@ -29,13 +31,33 @@ class PredictionDFBuilder:
         with missing columns added and existing columns not in the list dropped.
         '''
 
-        column_names = ['Action', 'Adventure', 'Comedy', 'Crime', 'Drama', 'Family', 'Fantasy',
-       'Horror', 'Romance', 'Sci-Fi', 'Thriller', 'actor_total_facebook_likes',
-       'budget', 'cast_total_facebook_likes', 'director_facebook_likes',
-       'director_frequency', 'duration', 'facenumber_in_poster', 'gross',
-       'imdb_score', 'movie_facebook_likes', 'num_critic_for_reviews',
-       'num_user_for_reviews', 'num_voted_users', 'other_genre', 'rating_bin',
-       'title_year', 'total_actor_frequency']
+        column_names = ['Action',
+                        'Adventure', 
+                        'Comedy', 
+                        'Crime', 
+                        'Drama', 
+                        'Family', 
+                        'Fantasy',
+                        'Horror', 
+                        'Romance', 
+                        'Sci-Fi', 
+                        'Thriller', 
+                        'actor_total_facebook_likes', 
+                        'budget', 
+                        'cast_total_facebook_likes', 
+                        'director_facebook_likes', 
+                        'director_frequency', 
+                        'duration', 
+                        'facenumber_in_poster', 
+                        'gross',
+                        'movie_facebook_likes', 
+                        'num_critic_for_reviews',
+                        'num_user_for_reviews', 
+                        'num_voted_users', 
+                        'other_genre', 
+                        'rating_bin',
+                        'title_year', 
+                        'total_actor_frequency']
         self.prediction = pd.DataFrame(0, index=[0], columns=column_names)
         return self
     
@@ -85,11 +107,15 @@ class PredictionDFBuilder:
         
     def __calculate_rating(self):
         self.prediction["rating_bin"] = self.rating
+
+    def __calculate_year(self):
+        self.prediction["title_year"] = datetime.now().year    
             
     def build(self) -> pd.DataFrame:
         self.__calculate_actor_facebook_likes()
         self.__calculate_director_facebook_likes()
         self.__calculate_director_frequency()
         self.__calculate_rating()
+        self.__calculate_year()
 
         return self.prediction        
