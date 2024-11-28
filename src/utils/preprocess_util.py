@@ -223,6 +223,7 @@ def _bucket_contentRatings(data: pd.DataFrame) -> pd.DataFrame:
     content_rating_df['percentage'] = content_rating_df['content_rating'].map(content_rating_df['content_rating'].value_counts()) / total_count * 100
     content_rating_df["rating_bin"] = content_rating_df["content_rating"].where(content_rating_df["percentage"] >= 10, "other")
     content_rating_df.drop(columns=['content_rating','percentage'], inplace=True)
+    data.drop(columns=['content_rating'], inplace=True)
     return pd.concat([data, content_rating_df], axis=1)
 
 
