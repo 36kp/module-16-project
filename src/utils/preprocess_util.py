@@ -12,10 +12,7 @@ def preprocess_data(data: pd.DataFrame) -> pd.DataFrame:
         _sort, 
         _filter, 
         _strip, 
-        _fillna, 
-        #_concat, 
-        #join_explode, 
-        #_freq
+        _fillna
         ]
     return _pipeline(data, functions)
 
@@ -183,38 +180,7 @@ def _freq(data: pd.DataFrame, debug: bool = False) -> pd.DataFrame:
         print(f"{_freq.__name__}: Processed data shape: {processed_data.shape}")
     return processed_data
 
-
-
-# TODO MOVE THIS TO A SEPARATE FILE
-
-def _drop_names_likes(data: pd.DataFrame, debug: bool = False) -> pd.DataFrame:
-    drop_columns = ['actor_1_facebook_likes', 
-                    'actor_1_name', 
-                    'actor_2_facebook_likes',
-                    'actor_2_name', 
-                    'actor_3_facebook_likes', 
-                    'actor_3_name', 
-                    'director_name', 
-                    'actors', 
-                    'movie_title']
-    processed_data = data.drop(drop_columns, axis=1)
-    if debug:
-        print(f"{_drop_names_likes.__name__}: Processed data shape: {processed_data.shape}")
-    return processed_data
-
-
-def _genres_dummies(data: pd.DataFrame, debug: bool = False) -> pd.DataFrame:
-    # TODO modify this with a lambda function
-    genres = data
-    genres['genres'] = genres['genres'].astype(str)
-    genres['genres'] = genres['genres'].str.split('|')
-    genre_dummies = genres['genres'].explode().str.get_dummies().groupby(level=0).max()
-    processed_data = pd.concat([genres.drop(columns=['genres']), genre_dummies], axis=1)
-    if debug:
-        print(f"{_genres_dummies.__name__}: Processed data shape: {processed_data.shape}")
-    return processed_data
-
-
+#######################
 
 def _bucket_contentRatings(data: pd.DataFrame) -> pd.DataFrame:
     content_rating_df = data[['content_rating']].copy()
@@ -241,8 +207,6 @@ def _process_genres(data: pd.DataFrame) -> pd.DataFrame:
     data = data.drop(columns=['genres'])
     return data
 
-
-
 def _director_frequence(data: pd.DataFrame) -> pd.DataFrame:
     data['director_name'] = data['director_name'].fillna('unknown_director')
     director_frequencies = data['director_name'].value_counts()
@@ -264,17 +228,6 @@ def _actor_frequency(data: pd.DataFrame) -> pd.DataFrame:
     data = data.drop(columns=['actor_1_name','actor_2_name','actor_3_name'])
     data = data.drop(columns=['actor_1_frequency','actor_2_frequency','actor_3_frequency'])
     return data
-
-
-def preprocess_data2(data: pd.DataFrame) -> pd.DataFrame:
-    functions = [
-        _bucket_contentRatings,
-        _process_genres, 
-        _director_frequence, 
-        _actor_frequency
-        ]
-    return _pipeline(data, functions)
-
 
 def _sum_actor_facebook_likes(data: pd.DataFrame) -> pd.DataFrame:
     data['actor_1_facebook_likes'] = data['actor_1_facebook_likes'].fillna(0)
