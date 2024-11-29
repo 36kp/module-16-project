@@ -13,6 +13,8 @@ def preprocess_data(data: pd.DataFrame) -> pd.DataFrame:
         _filter, 
         _strip, 
         _fillna
+        # _remove_outliers_gross,
+        # _remove_outliers_budget
         ]
     return _pipeline(data, functions)
 
@@ -398,3 +400,80 @@ def _sum_actor_facebook_likes(data: pd.DataFrame) -> pd.DataFrame:
 
     data = data.drop(columns=['actor_1_facebook_likes', 'actor_2_facebook_likes', 'actor_3_facebook_likes'])
     return data
+
+def __remove_outliers(data: pd.DataFrame, column: str, threshold: float = 3.0) -> pd.DataFrame:
+    '''
+    Removes outliers from a specified column in a Pandas DataFrame based on the Z-score method.
+
+    This function calculates the Z-score for each value in the specified column and removes rows where the Z-score
+    exceeds a certain threshold. By default, the threshold is set to 3.0 standard deviations from the mean.
+
+    Parameters:
+    data : pd.DataFrame
+        The input DataFrame containing the column with potential outliers.
+
+    column : str
+        The name of the column in the DataFrame to process for outliers.
+
+    threshold : float, optional
+        The Z-score threshold beyond which a value is considered an outlier. 
+        Values with a Z-score greater than this threshold will be removed from the DataFrame.
+        The default threshold is 3.0 standard deviations.
+
+    Returns:
+    pd.DataFrame
+        A DataFrame with rows removed where the specified column contains outliers based on the Z-score method.
+    '''
+    z_scores = (data[column] - data[column].mean()) / data[column].std()
+    data = data[abs(z_scores) < threshold]
+    return data
+
+def _remove_outliers_budget(data: pd.DataFrame, debug: bool = False) -> pd.DataFrame:
+    '''
+    Removes outliers from the 'budget' and 'gross' columns in a Pandas DataFrame.
+
+    This function uses the Z-score method to identify and remove outliers from the 'budget' and 'gross' columns
+    of the input DataFrame. Rows with budget or gross values that are more than 3 standard deviations from the mean
+    are considered outliers and are removed.
+
+    Parameters:
+    data : pd.DataFrame
+        The input DataFrame containing 'budget' and 'gross' columns to process for outliers.
+
+    debug : bool, optional
+        If set to True, the function will print debug information, including the function name
+        and the shape of the processed DataFrame.
+
+    Returns:
+    pd.DataFrame
+        A DataFrame with rows removed where the 'budget' or 'gross' columns contain outliers based on the Z-score method.
+    '''
+    processed_data = __remove_outliers(data, 'budget')
+    if debug:
+        print(f"{_remove_outliers_budget.__name__}: Processed data shape: {processed_data.shape}")
+    return processed_data
+
+def _remove_outliers_gross(data: pd.DataFrame, debug: bool = False) -> pd.DataFrame:
+    '''
+    Removes outliers from the 'budget' and 'gross' columns in a Pandas DataFrame.
+
+    This function uses the Z-score method to identify and remove outliers from the 'budget' and 'gross' columns
+    of the input DataFrame. Rows with budget or gross values that are more than 3 standard deviations from the mean
+    are considered outliers and are removed.
+
+    Parameters:
+    data : pd.DataFrame
+        The input DataFrame containing 'budget' and 'gross' columns to process for outliers.
+
+    debug : bool, optional
+        If set to True, the function will print debug information, including the function name
+        and the shape of the processed DataFrame.
+
+    Returns:
+    pd.DataFrame
+        A DataFrame with rows removed where the 'budget' or 'gross' columns contain outliers based on the Z-score method.
+    '''
+    processed_data = __remove_outliers(data, 'gross')
+    if debug:
+        print(f"{_remove_outliers_gross.__name__}: Processed data shape: {processed_data.shape}")
+    return processed_data
