@@ -110,6 +110,11 @@ class PredictionDFBuilder:
     
 
     def __calculate_actor_facebook_likes(self):
+        if debug:
+            print(self.actor_1_name)
+            print(self.actor_2_name)
+            print(self.actor_3_name)
+
         self.prediction["actor_total_facebook_likes"] = (
             self.__actor_rating(self.actor_1_name, 'actor_1_name', 'actor_1_facebook_likes')
             + self.__actor_rating(self.actor_2_name, 'actor_2_name', 'actor_2_facebook_likes') 

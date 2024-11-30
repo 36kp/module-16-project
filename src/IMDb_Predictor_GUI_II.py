@@ -25,9 +25,12 @@ class PredictionDFBuilderGUI:
 
         #List of options for dropdowns without 'Select Another'
         # self.actors = ["Orlando Bloom", "Meryl Streep", "Tom Hanks"]
-        self.directors = ["Steven Spielberg", "Gore Verbinski"]
+        #self.directors = ["Steven Spielberg", "Gore Verbinski"]
         self.ratings = ["PG", "PG-13", "R", "G", "NC-17"]
         self.genres = ["Action", "Comedy", "Drama", "Sci-Fi", "Horror", "Romance", "Fantasy", "Mystery", "Thriller"]
+
+        df['director_name'] = df['director_name'].dropna()
+        self.directors = df['director_name'].tolist()
 
         df['actor_1_name'] = df['actor_1_name'].dropna()
         self.actors_1 = df['actor_1_name'].tolist()
