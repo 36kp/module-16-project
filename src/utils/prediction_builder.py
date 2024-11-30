@@ -115,6 +115,8 @@ class PredictionDFBuilder:
         
     def __calculate_rating(self):
         self.prediction["rating_bin"] = self.rating
+        self.prediction['rating_bin'] = self.prediction['rating_bin'].astype('category')
+        self.prediction['rating_bin'] = self.prediction['rating_bin'].cat.codes
 
     def __calculate_genre(self):
         genres = {"Action", "Adventure", "Comedy", "Crime", "Drama", "Family",
