@@ -4,10 +4,13 @@ import utils.transformer_util as tu
 import utils.trainer_util as trainer
 import pandas as pd
 from sklearn.linear_model import LinearRegression
-from sklearn.preprocessing import StandardScaler, OneHotEncoder
+from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import Pipeline
 from sklearn.model_selection import train_test_split
 from sklearn.decomposition import PCA
+from sklearn.linear_model import Lasso
+from sklearn.linear_model import Ridge
+from sklearn.svm import SVR
 
 def r2_adj(x, y, model):
     """
@@ -18,7 +21,7 @@ def r2_adj(x, y, model):
     n_cols = x.shape[1]
     return 1 - (1 - r2) * (len(y) - 1) / (len(y) - n_cols - 1)
 
-def check_metrics(X_test, y_test, model):
+def check_metrics(X_test, y_test, model, debug=False):
     """
     Calculates and displays MSE, r-squared, and adjusted 
     r-squared values, given X and y test sets, and the 
@@ -28,18 +31,27 @@ def check_metrics(X_test, y_test, model):
         X_test (pd.DataFrame): Test set features.
         y_test (pd.Series): Test set target values.
         model (Model): Model used for predictions.
+        debug (bool, optional): Print debug information. Defaults
     Returns:
         y_pred (np.array): Predicted target values.
     """
     # Use the pipeline to make predictions
     y_pred = model.predict(X_test)
+    
+    # Create a dictionary to store the metrics
+    metrics = {
+        "Mean Squared Error": mean_squared_error(y_test, y_pred),
+        "R-squared": r2_score(y_test, y_pred),
+        "Adjusted R-squared": r2_adj(X_test, y_test, model)
+    }
 
     # Print out the MSE, r-squared, and adjusted r-squared values
-    print(f"Mean Squared Error: {mean_squared_error(y_test, y_pred)}")
-    print(f"R-squared: {r2_score(y_test, y_pred)}")
-    print(f"Adjusted R-squared: {r2_adj(X_test, y_test, model)}")
+    if debug:
+        print("Mean Squared Error:", metrics["Mean Squared Error"])
+        print("R-squared:", metrics["R-squared"]) 
+        print("Adjusted R-squared:", metrics["Adjusted R-squared"])
     
-    return y_pred
+    return y_pred, metrics
     
 def get_pipeline_steps_PCA(data: pd.DataFrame):
     """
@@ -82,10 +94,10 @@ def get_pipeline(pipeline: Pipeline, df: pd.DataFrame , debug=False):
     X_test, y_test, pipeline = trainer.train_model(pipeline, df, 'imdb_score', debug)
     
     # Evaluate the model
-    y_pred = check_metrics(X_test, y_test, pipeline)
+    y_pred, metrics = check_metrics(X_test, y_test, pipeline)
     
     #return model
-    return  pipeline, y_pred
+    return  pipeline, y_pred, metrics
 
 def extract_pca_components(pipeline, X, y):
     """
@@ -133,14 +145,41 @@ def run_pipeline(data: pd.DataFrame, debug=False):
     """
     Runs the pipeline, including preprocessing, PCA, and evaluation.
     """
+    # Create a dictionary of models to train and compare
+    models = {
+        "Linear Regression": LinearRegression(),
+        "Lasso Regression": Lasso(),
+        "Ridge Regression": Ridge(),
+        "Support Vector Machine": SVR()
+    }
     # Preprocess the data
     preprocessed_df = pu.preprocess_data(data)
 
-    # Configure pipeline steps
-    steps = get_pipeline_steps(preprocessed_df)
-    pipeline = Pipeline(steps)
+    # A variable to store the best r2_adj value and the best model
+    best_r2_adj = 0
+    best_model = None
+    best_pipeline = None
+    best_y_pred = None
+    
+    # For each model in the dictionary train and evaluate the pipeline
+    for model_name, model in models.items():
+        # Configure pipeline steps
+        steps = get_pipeline_steps(preprocessed_df, model)
+        pipeline = Pipeline(steps)
 
-    # Train and evaluate the pipeline
-    trained_pipeline, y_pred = get_pipeline(pipeline, preprocessed_df, debug)
-
-    return trained_pipeline, y_pred
+        # Train and evaluate the pipeline
+        trained_pipeline, y_pred, metrics = get_pipeline(pipeline, preprocessed_df, debug)
+        print(f"Metrics for {model_name}: {metrics}")
+        if metrics["Adjusted R-squared"] > best_r2_adj:
+            best_r2_adj = metrics["Adjusted R-squared"]
+            best_model = model_name
+            best_pipeline = trained_pipeline
+            best_y_pred = y_pred
+    
+    if best_r2_adj == 0:
+        print("No model performed well.")
+        return None
+    
+    print(f"The best model is {best_model} with an adjusted R-squared of {best_r2_adj}")    
+    
+    return best_pipeline, best_y_pred
