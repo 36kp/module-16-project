@@ -69,7 +69,7 @@ class PredictionDFBuilderGUI:
     def build_prediction_df(self):
         # Assuming you have these classes/functions defined elsewhere
         
-        builder = PredictionDFBuilder(df)
+        builder = PredictionDFBuilder(self.df)
         prediction_df = (
             builder
             .add_actor_1(self.actor_1.get())
@@ -81,7 +81,7 @@ class PredictionDFBuilderGUI:
             .build()
         )
         
-        prediction = model.predict(prediction_df)
+        prediction = self.model.predict(prediction_df)
         self.output_label.config(text=f"Predicted IMDb Score: {prediction[0]:.2f}")
 
 # if __name__ == "__main__":
