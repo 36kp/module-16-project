@@ -1,6 +1,7 @@
 import pandas as pd
 from datetime import datetime
 
+debug = True
 
 class PredictionDFBuilder:
     def __init__(self, dataframe: pd.DataFrame):
@@ -66,26 +67,44 @@ class PredictionDFBuilder:
     
     
     def add_actor_1(self, actor_name: str):
+        if debug:
+            print(f"Adding actor 1: {actor_name}")
+
         self.actor_1_name = actor_name
         return self
 
     def add_actor_2(self, actor_name: str):
+        if debug:
+            print(f"Adding actor 2: {actor_name}")
+
         self.actor_2_name = actor_name
         return self
 
     def add_actor_3(self, actor_name: str):
+        if debug:
+            print(f"Adding actor 3: {actor_name}")
+
         self.actor_3_name = actor_name
         return self
 
     def add_director(self, director_name: str):
+        if debug:
+            print(f"Adding director: {director_name}")
+
         self.director_name = director_name
         return self
 
     def add_rating(self, rating: str):
+        if debug:
+            print(f"Adding rating: {rating}")
+
         self.rating = rating
         return self
     
     def add_genre(self, genre: str):
+        if debug:
+            print(f"Adding genre: {genre}")
+            
         self.genre = genre
         return self
     
@@ -180,4 +199,5 @@ class PredictionDFBuilder:
         self.__calculate_num_user_for_reviews()
         self.__calculate_num_voted_users()
         self.__calculate_total_actor_frequency()
+        print(self.prediction)
         return self.prediction        

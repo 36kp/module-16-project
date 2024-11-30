@@ -2,12 +2,17 @@ import tkinter as tk
 from tkinter import ttk
 import utils.fetcher_utils as fetcher
 import pandas as pd
+from utils.prediction_builder import PredictionDFBuilder 
 
-df = fetcher.aquireIMDbDataFrame()
+model = ""
+df = pd.DataFrame()
 
 class PredictionDFBuilderGUI:
-    def __init__(self, master):
+    
+    def __init__(self, master, df, model):
         self.master = master
+        self.model = model
+        self.df = df
         master.title("PredictionDF Builder")
         
         # Variables for dropdown selections
@@ -18,21 +23,29 @@ class PredictionDFBuilderGUI:
         self.rating = tk.StringVar()
         self.genre = tk.StringVar()
 
-        # List of options for dropdowns without 'Select Another'
-        self.actors = ["Clint Eastwood", "Meryl Streep", "Tom Hanks"]
+        #List of options for dropdowns without 'Select Another'
+        # self.actors = ["Orlando Bloom", "Meryl Streep", "Tom Hanks"]
         self.directors = ["Steven Spielberg", "Gore Verbinski"]
         self.ratings = ["PG", "PG-13", "R", "G", "NC-17"]
         self.genres = ["Action", "Comedy", "Drama", "Sci-Fi", "Horror", "Romance", "Fantasy", "Mystery", "Thriller"]
 
+        df['actor_1_name'] = df['actor_1_name'].dropna()
+        self.actors_1 = df['actor_1_name'].tolist()
+        df['actor_2_name'] = df['actor_2_name'].dropna()
+        self.actors_2 = df['actor_2_name'].tolist()
+        df['actor_3_name'] = df['actor_3_name'].dropna()
+        self.actors_3 = df['actor_3_name'].tolist()
+        # self.directors = df['director_name'].unique()
+
         # Labels and Dropdowns
         tk.Label(master, text="Actor 1:").grid(row=0, column=0, sticky="e", padx=5, pady=5)
-        ttk.Combobox(master, textvariable=self.actor_1, values=self.actors).grid(row=0, column=1, padx=5, pady=5)
+        ttk.Combobox(master, textvariable=self.actor_1, values=self.actors_1).grid(row=0, column=1, padx=5, pady=5)
 
         tk.Label(master, text="Actor 2:").grid(row=1, column=0, sticky="e", padx=5, pady=5)
-        ttk.Combobox(master, textvariable=self.actor_2, values=self.actors).grid(row=1, column=1, padx=5, pady=5)
+        ttk.Combobox(master, textvariable=self.actor_2, values=self.actors_2).grid(row=1, column=1, padx=5, pady=5)
 
         tk.Label(master, text="Actor 3:").grid(row=2, column=0, sticky="e", padx=5, pady=5)
-        ttk.Combobox(master, textvariable=self.actor_3, values=self.actors).grid(row=2, column=1, padx=5, pady=5)
+        ttk.Combobox(master, textvariable=self.actor_3, values=self.actors_3).grid(row=2, column=1, padx=5, pady=5)
 
         tk.Label(master, text="Director:").grid(row=3, column=0, sticky="e", padx=5, pady=5)
         ttk.Combobox(master, textvariable=self.director, values=self.directors).grid(row=3, column=1, padx=5, pady=5)
@@ -52,8 +65,6 @@ class PredictionDFBuilderGUI:
 
     def build_prediction_df(self):
         # Assuming you have these classes/functions defined elsewhere
-        df = fetcher.acquireIMDbDataFrame()
-        model, _ = pu.run_pipeline(df, True)
         
         builder = PredictionDFBuilder(df)
         prediction_df = (
@@ -70,7 +81,7 @@ class PredictionDFBuilderGUI:
         prediction = model.predict(prediction_df)
         self.output_label.config(text=f"Predicted IMDb Score: {prediction[0]:.2f}")
 
-if __name__ == "__main__":
-    root = tk.Tk()
-    gui = PredictionDFBuilderGUI(root)
-    root.mainloop()
+# if __name__ == "__main__":
+#     root = tk.Tk()
+#     gui = PredictionDFBuilderGUI(root)
+#     root.mainloop()
