@@ -11,6 +11,7 @@ from sklearn.decomposition import PCA
 from sklearn.linear_model import Lasso
 from sklearn.linear_model import Ridge
 from sklearn.svm import SVR
+from sklearn.compose import ColumnTransformer
 
 def r2_adj(x, y, model):
     """
@@ -53,19 +54,7 @@ def check_metrics(X_test, y_test, model, debug=False):
     
     return y_pred, metrics
     
-def get_pipeline_steps_PCA(data: pd.DataFrame):
-    """
-    Create a list of steps for the pipeline with PCA components.
-
-    Args:
-        data (pd.DataFrame): DataFrame containing the data.
-
-    Returns:
-        List: List of steps for the pipeline.
-    """
-    return get_pipeline_steps(data).insert(1, ("PCA", PCA(n_components=2)))
-    
-def get_pipeline_steps(data: pd.DataFrame, model=LinearRegression()):
+def get_pipeline_steps(data: pd.DataFrame, use_PCA = False, model=LinearRegression()):
     """
     Create a list of steps for the pipeline.
 
@@ -76,8 +65,30 @@ def get_pipeline_steps(data: pd.DataFrame, model=LinearRegression()):
     Returns:
         List: List of steps for the pipeline.
     """
-    return [("Scale", StandardScaler(with_mean=False)), 
-            ("Model", model)] 
+    cols_to_scale = ['actor_total_facebook_likes',
+       'budget', 'cast_total_facebook_likes', 'director_facebook_likes',
+       'director_frequency', 'facenumber_in_poster', 'gross',
+       'movie_facebook_likes', 'num_critic_for_reviews',
+       'num_user_for_reviews', 'num_voted_users', 'total_actor_frequency']
+    cols_to_exclude = ['Action', 'Adventure', 'Comedy', 'Crime', 'Drama', 'Family', 'Fantasy',
+       'Horror', 'Romance', 'Sci-Fi', 'Thriller', 'duration', 'other_genre', 'rating_bin',
+       'title_year']
+    preprocessor = ColumnTransformer(
+        transformers=[
+            ('scale', StandardScaler(), cols_to_scale),
+            ('exclude', 'passthrough', cols_to_exclude)
+        ]
+    )
+    
+    # Create a list of tuples containing the steps
+    steps = []
+    
+    steps.append(("Scale", preprocessor)) # Scale the data
+    if use_PCA:
+        steps.append(("PCA", PCA(n_components=0.95))) # Use PCA
+    steps.append(("Model", model)) # Model to train
+    
+    return steps
     
 def get_pipeline(pipeline: Pipeline, df: pd.DataFrame , debug=False):
     """
@@ -121,29 +132,17 @@ def calculate_pca_correlation(pca_df):
     print(correlation_matrix)
     return correlation_matrix
 
-def run_pipeline_PCA(data: pd.DataFrame, debug=False):
+def run_pipeline(data: pd.DataFrame, use_PCA=False, debug=False):
     """
-    Runs the pipeline, including preprocessing, PCA, and evaluation.
-    """
-    # Preprocess the data
-    preprocessed_df = pu.preprocess_data(data)
-
-    # Configure pipeline steps
-    steps = get_pipeline_steps_PCA(preprocessed_df)
-    pipeline = Pipeline(steps)
-
-    # Train and evaluate the pipeline
-    X_train, X_test, y_test, trained_pipeline = get_pipeline(pipeline, preprocessed_df, debug)
-
-    # If PCA is used, extract and analyze PCA components
-    pca_df = extract_pca_components(trained_pipeline, X_test, y_test)
-    calculate_pca_correlation(pca_df)
-
-    return X_train, X_test, y_test, trained_pipeline
-
-def run_pipeline(data: pd.DataFrame, debug=False):
-    """
-    Runs the pipeline, including preprocessing, PCA, and evaluation.
+    Runs the pipeline, including preprocessing and evaluation.
+    
+    Args:
+        data (pd.DataFrame): DataFrame containing the data.
+        use_PCA (bool, optional): Use PCA components. Defaults to False.
+        debug (bool, optional): Print debug information. Defaults to False.
+    Returns:
+        Pipeline: Best of the trained pipelines.
+        y_pred (np.array): Predicted target values.
     """
     # Create a dictionary of models to train and compare
     models = {
@@ -164,7 +163,7 @@ def run_pipeline(data: pd.DataFrame, debug=False):
     # For each model in the dictionary train and evaluate the pipeline
     for model_name, model in models.items():
         # Configure pipeline steps
-        steps = get_pipeline_steps(preprocessed_df, model)
+        steps = get_pipeline_steps(data = preprocessed_df, use_PCA=use_PCA, model=model)
         pipeline = Pipeline(steps)
 
         # Train and evaluate the pipeline
@@ -182,4 +181,4 @@ def run_pipeline(data: pd.DataFrame, debug=False):
     
     print(f"The best model is {best_model} with an adjusted R-squared of {best_r2_adj}")    
     
-    return best_pipeline, best_y_pred
+    return best_pipeline, best_y_pred, preprocessed_df
