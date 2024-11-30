@@ -18,6 +18,9 @@ class PredictionDFBuilder:
         # Ratings
         self.rating = ''
 
+        # Genres
+        self.genre = 0
+
         self.empty()
         
 
@@ -81,6 +84,11 @@ class PredictionDFBuilder:
     def add_rating(self, rating: str):
         self.rating = rating
         return self
+    
+    def add_genre(self, genre: str):
+        self.genre = genre
+        return self
+    
 
     def __calculate_actor_facebook_likes(self):
         self.prediction["actor_total_facebook_likes"] = (
@@ -107,19 +115,69 @@ class PredictionDFBuilder:
         
     def __calculate_rating(self):
         self.prediction["rating_bin"] = self.rating
+        self.prediction['rating_bin'] = self.prediction['rating_bin'].astype('category')
+        self.prediction['rating_bin'] = self.prediction['rating_bin'].cat.codes
 
+    def __calculate_genre(self):
+        genres = {"Action", "Adventure", "Comedy", "Crime", "Drama", "Family",
+              "Fantasy", "Horror", "Romance", "Sci-Fi", "Thriller"}
+        for genre in genres:
+            self.prediction[genre] = int(self.genre == genre)
+        
     def __calculate_year(self):
         self.prediction["title_year"] = datetime.now().year    
 
     def __calculate_gross(self):
         self.prediction["gross"] = self.dataframe['gross'].mean()
-            
+
+    def __calculate_budget(self):
+        self.prediction["budget"] = self.dataframe['budget'].mean()
+
+    def _calculate_cast_total_facebook_likes(self):
+        self.prediction["cast_total_facebook_likes"] = int(self.dataframe['cast_total_facebook_likes'].mean())
+
+    def __calculate_duration(self):    
+        self.prediction["duration"] = int(self.dataframe['duration'].mean())
+
+    def __calculate_facenumber_in_poster(self):
+        self.prediction["facenumber_in_poster"] = int(self.dataframe['facenumber_in_poster'].mean())
+
+    def __calculate_movie_facebook_likes(self):
+        self.prediction["movie_facebook_likes"] = int(self.dataframe['movie_facebook_likes'].mean())
+
+    def __calculate_num_critic_for_reviews(self):
+        self.prediction["num_critic_for_reviews"] = int(self.dataframe['num_critic_for_reviews'].mean())
+
+    def __calculate_num_user_for_reviews(self):
+        self.prediction["num_user_for_reviews"] = int(self.dataframe['num_user_for_reviews'].mean())
+
+    def __calculate_num_voted_users(self):
+        self.prediction["num_voted_users"] = int(self.dataframe['num_voted_users'].mean())    
+
+    def __calculate_total_actor_frequency(self):
+        self.prediction["total_actor_frequency"] = (
+            self.dataframe["actor_1_facebook_likes"] 
+            + self.dataframe["actor_1_facebook_likes"] 
+            + self.dataframe["actor_3_facebook_likes"]   
+        )
+
+
     def build(self) -> pd.DataFrame:
         self.__calculate_actor_facebook_likes()
         self.__calculate_director_facebook_likes()
         self.__calculate_director_frequency()
         self.__calculate_rating()
+        self.__calculate_genre()
+
         self.__calculate_year()
         self.__calculate_gross()
-
+        self.__calculate_budget()
+        self._calculate_cast_total_facebook_likes()
+        self.__calculate_duration()
+        self.__calculate_facenumber_in_poster()
+        self.__calculate_movie_facebook_likes()
+        self.__calculate_num_critic_for_reviews()
+        self.__calculate_num_user_for_reviews()
+        self.__calculate_num_voted_users()
+        self.__calculate_total_actor_frequency()
         return self.prediction        
