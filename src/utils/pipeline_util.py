@@ -3,15 +3,14 @@ from sklearn.metrics import mean_squared_error, r2_score
 import utils.transformer_util as tu
 import utils.trainer_util as trainer
 import pandas as pd
-from sklearn.linear_model import LinearRegression
+from sklearn.linear_model import LinearRegression, Lasso, Ridge
 from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import Pipeline
 from sklearn.model_selection import train_test_split
 from sklearn.decomposition import PCA
-from sklearn.linear_model import Lasso
-from sklearn.linear_model import Ridge
 from sklearn.svm import SVR
 from sklearn.compose import ColumnTransformer
+from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
 
 def r2_adj(x, y, model):
     """
@@ -149,7 +148,10 @@ def run_pipeline(data: pd.DataFrame, use_PCA=False, debug=False):
         "Linear Regression": LinearRegression(),
         "Lasso Regression": Lasso(),
         "Ridge Regression": Ridge(),
-        "Support Vector Machine": SVR()
+        "Support Vector Machine": SVR(),
+        "Random Forest": RandomForestRegressor(n_estimators=128),
+        "Gradient Boosting": GradientBoostingRegressor(n_estimators=128)
+        
     }
     # Preprocess the data
     preprocessed_df = pu.preprocess_data(data)
