@@ -1,20 +1,21 @@
 import pandas as pd
 import kagglehub
 import os
+import sys
 import shutil
 
-resources_path = "../resources"
 file_name = "movie_metadata.csv"
 kaggle_data = "carolzhangdc/imdb-5000-movie-dataset"
 
-def aquireIMDbDataFrame():
+def aquireIMDbDataFrame(path = "../resources"):
     """
     Aquires the IMDb data from a local file or from Kaggle if the file does not exist locally.
 
     Returns: A pandas DataFrame with the IMDb data.
     """
-
+    resources_path = path
     file_path = os.path.join(resources_path, file_name)
+    print(f"File path: {file_path}")
     print(f"Reading data from {file_path}")
     if os.path.exists(file_path):
         return pd.read_csv(file_path)
