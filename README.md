@@ -1,7 +1,17 @@
-# module-16-project
-
 # CinemaScore Predictor: An AI Model for IMDb Rating Prediction
 
+## Table of Contents
+- [Goals](#goals)
+  - [Model Development](#model-development)
+  - [Performance Metrics](#performance-metrics)
+- [Deployment](#deployment)
+- [Future Enhancements](#future-enhancements)
+- [Prerequisites](#prerequisites)
+- [Usage](#usage)
+- [Project Structure](#project-structure)
+- [Contributing](#contributing)
+- [License](#license)
+---
 ## Purpose
 The purpose of this project is to develop a supervised machine learning model that can predict the IMDb score of a movie based on key attributes such as the director, budget, lead actor, and genre. This tool aims to assist film studios, investors, and enthusiasts in predicting the potential reception of a movie before its release, thereby aiding in strategic decision-making for production, marketing, and investment.
 
@@ -66,3 +76,68 @@ We will compile data from the IMDb movie database. This dataset will include:
 ---
 
 This proposal outlines a structured approach to developing a predictive model for movie success, potentially revolutionizing how films are evaluated before they hit the screens.
+
+---
+## Project Structure
+```
+module-16-project/ 
+    ├── docs/ 
+    │   ├── Final-Presentation.pdf              # Final project presentation
+    │   ├── module-16-project.pptx              # Powerpoint file for the presentation
+    │   └── proposal.md                         # Project proposal
+    ├── resources/
+    │   ├── img/                                # Project images and exported charts
+    │   ├── movie_metadata.csv                  # Downloaded CSV file (Available only after first run)
+    |   └── preprocessed_df.csv                 # Processed and cleaned up dataframe exported (Available only after first run)
+    ├── src/                                    # Source code files
+    |   └── analysis/                           # Jupyter notebooks used for data analysis
+    |       ├── analysis_*.ipynb                # Detailed analysis file for each features
+    |       └── prediction_test.ipynb           # Pipeline and model prediction test file
+    ├── utils/                                  # Utility files (Python modules)
+    |   ├── fetcher_utils.py                    # Data fetching code
+    |   ├── pipeline_util.py                    # Model training pipeline code
+    |   ├── prediction_builder.py               # Prediction DataFrame builder code
+    |   ├── preprocess_util.py                  # Data cleanup and aggregation functions
+    |   ├── trainer_util.py                     # Correlation analysis and model training implementation
+    |   └── transformer_util.py                 # Data encoding functions
+    ├── IMDb_Predictor_GUI_II.py                # GUI for Data Prediction application
+    ├── main.ipynb                              # Main project entrypoint notebook
+    └── model_performance_analysis.ipynb        # Model performance analysis notebook
+
+```
+## Prerequisites
+- Python 3.7 or higher
+- Jupyter Notebook
+- Required Python packages:
+  - pandas
+  - numpy
+  - scikit-learn
+  - matplotlib
+  - seaborn
+
+You can install the required packages using the following command:
+```sh
+pip install pandas numpy scikit-learn matplotlib seaborn
+```
+## Usage
+
+1. Clone the repository
+```sh
+git clone https://github.com/36kp/module-16-project.git
+cd module-16-pproject
+```
+2. Open Jupyter Notebook:
+```sh
+jupyter notebook
+```
+3. Navigate to the `src` folter and open and execute `main.ipynb`
+4. For more detailed analysis, explore the notebooks in the `src/analysis` folder
+---
+## Contributing
+We welcome contributions to the project! If you'd like to contribute, please follow these steps:
+1. Fork the repository.
+2. Create a new branch for your feature or bug fix.
+3. Submit a pull request describing your changes.
+---
+## License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

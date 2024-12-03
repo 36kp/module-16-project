@@ -13,8 +13,6 @@ def preprocess_data(data: pd.DataFrame) -> pd.DataFrame:
         _filter, 
         _strip, 
         _fillna
-        # _remove_outliers_gross,
-        # _remove_outliers_budget
         ]
     return _pipeline(data, functions)
 
