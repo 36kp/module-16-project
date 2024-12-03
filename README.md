@@ -75,7 +75,7 @@ We will compile data from the IMDb movie database. This dataset will include:
 
 ---
 
-This proposal outlines a structured approach to developing a predictive model for movie success, potentially revolutionizing how films are evaluated before they hit the screens.
+This project outlines a structured approach to developing a predictive model for movie success, potentially revolutionizing how films are evaluated before they hit the screens.
 
 ---
 ## Project Structure
