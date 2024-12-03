@@ -3,7 +3,7 @@ import pandas as pd
 def preprocess_data(data: pd.DataFrame) -> pd.DataFrame:
     functions = [
         _actor_frequency,
-        _director_frequence, 
+        _director_frequency, 
         _bucket_contentRatings,
         _process_genres, 
         _sum_actor_facebook_likes,
@@ -13,8 +13,6 @@ def preprocess_data(data: pd.DataFrame) -> pd.DataFrame:
         _filter, 
         _strip, 
         _fillna
-        # _remove_outliers_gross,
-        # _remove_outliers_budget
         ]
     return _pipeline(data, functions)
 
@@ -302,7 +300,7 @@ def _process_genres(data: pd.DataFrame) -> pd.DataFrame:
     data = data.drop(columns=['genres'])
     return data
 
-def _director_frequence(data: pd.DataFrame) -> pd.DataFrame:
+def _director_frequency(data: pd.DataFrame) -> pd.DataFrame:
     '''
     Processes the 'director_name' column in a Pandas DataFrame by calculating the frequency of each director
     and creating a new column with these frequency values.

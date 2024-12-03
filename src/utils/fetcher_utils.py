@@ -1,7 +1,6 @@
 import pandas as pd
 import kagglehub
 import os
-import sys
 import shutil
 
 file_name = "movie_metadata.csv"
@@ -21,11 +20,11 @@ def aquireIMDbDataFrame(path = "../resources"):
         return pd.read_csv(file_path)
     else:
         print("File does not exist locally. Downloading from Kaggle.")
-        downloadKaggleIMDbFile()
+        downloadKaggleIMDbFile(resources_path)
         return aquireIMDbDataFrame()
     
 
-def downloadKaggleIMDbFile():
+def downloadKaggleIMDbFile(resources_path):
     """
     Copies a file from Kraggle.
     """
